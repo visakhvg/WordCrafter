@@ -1,0 +1,26 @@
+# config/routes/word_crafter.yaml
+
+homepage:
+    path: /wordcrafter/homepage
+    controller: App\Controller\WordCrafterController::homepage
+    methods: [GET]
+
+start_game:
+    path: /start
+    controller: App\Controller\WordCrafterController::startGame
+    methods: [POST]
+
+play_game:
+    path: /play/{id}
+    controller: App\Controller\WordCrafterController::playGame
+    methods: [GET]
+    
+submit_word:
+    path: /play/{id}/submit
+    controller: App\Controller\WordCrafterController::submitWord
+    methods: [POST]
+
+highscores:
+    path: /highscores
+    controller: App\Controller\HighscoreController::showHighscores
+    methods: [GET]

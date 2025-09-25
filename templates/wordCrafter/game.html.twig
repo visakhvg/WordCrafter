@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Word Crafter - Play</title>
+        <style>
+            body {
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f0f4f8; /* A light, calming background */
+                color:#333;
+                margin: 0;
+                padding: 40px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+            }
+            .game-container {
+                background-color: white;
+                border-radius: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+                max-width: 1000px;
+                width: 100%;
+                text-align: center;
+            }
+
+            h1 {
+                font-size: 2.5em;
+                color: #2c3e50;
+                margin-bottom: 0.5em;
+            }
+
+            p {
+                font-size: 1.1em;
+                color: #7f8c8d;
+                margin: 10px 0;
+            }
+
+            .puzzle-letters {
+                font-size: 2em;
+                font-weight: bold;
+                letter-spacing: 5px;
+                color: #3498db; /* A vibrant blue for the puzzle */
+                margin: 20px 0;
+                overflow-wrap: break-word;
+            }
+
+            .score-box {
+                background-color: #ecf0f1;
+                padding: 15px;
+                border-radius: 10px;
+                font-size: 1.2em;
+                font-weight: bold;
+                margin: 20px auto;
+                max-width: 300px;
+            }
+
+            .alert-danger {
+                background-color: #e74c3c;
+                color: white;
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                font-weight: bold;
+                box-shadow: 0 5px 15px rgba(231, 76, 60, 0.2);
+            }
+
+            .alert-success {
+                background-color: #25e235;
+                color: white;
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                font-weight: bold;
+                box-shadow: 0 5px 15px rgba(231, 76, 60, 0.2);
+            }
+
+            form {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+                margin-top: 30px;
+            }
+
+            form label {
+                font-weight: bold;
+                color: #34495e;
+                font-size: 1.1em;
+            }
+
+            form input[type="text"] {
+                padding: 15px;
+                border: 2px solid #ddd;
+                border-radius: 10px;
+                font-size: 1em;
+                width: 100%;
+                max-width: 350px;
+                text-align: center;
+                transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            }
+
+            form input[type="text"]:focus {
+                outline: none;
+                border-color: #3498db;
+                box-shadow: 0 0 12px rgba(52, 152, 219, 0.3);
+            }
+
+            form button {
+                background-color: #2ecc71; /* A friendly green for actions */
+                color: white;
+                padding: 15px 30px;
+                border: none;
+                border-radius: 10px;
+                font-size: 1.1em;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            form button:hover {
+                background-color: #27ae60;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 20px rgba(46, 204, 113, 0.4);
+            }
+
+            h2 {
+                font-size: 1.5em;
+                color: #34495e;
+                margin-top: 40px;
+                margin-bottom: 20px;
+                position: relative;
+            }
+
+            h2::after {
+                content: "";
+                display: block;
+                width: 50px;
+                height: 3px;
+                background-color: #3498db;
+                margin: 10px auto 0;
+                border-radius: 2px;
+            }
+
+            .words-used-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+
+            .words-used-list li {
+                background-color: #ecf0f1;
+                padding: 8px 15px;
+                border-radius: 15px;
+                font-size: 0.9em;
+                font-weight: 500;
+                color: #2c3e50;
+            }
+
+            .back-button-container {
+                margin-top: 40px;
+            }
+
+            #backToHomeBtn {
+                background-color: #e74c3c;
+                color: white;
+                padding: 15px 30px;
+                border-radius: 10px;
+                font-weight: bold;
+                text-decoration: none;
+                display: inline-block;
+                transition: all 0.3s ease;
+            }
+
+            #backToHomeBtn:hover {
+                background-color: #c0392b;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="game-container">
+            <h3>
+                Hey {{session.username}}, here's your Puzzle:
+                <span class="puzzle-letters">{{ session.remainingLetters }}</span>
+            </h3>
+            <p>Puzzle String: {{ session.puzzleWord }}</p>
+            <div class="score-box">
+                Current Score: {{ session.score ? session.score : 0 }}
+            </div>
+
+            {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+
+            <!-- {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+            {% endfor %} -->
+
+            <form
+                action="{{ path('submit_word', { id: session.id }) }}"
+                method="post"
+            >
+                <label for="word_input">Your Word:</label>
+                <input type="text" id="word_input" name="word" required autocomplete="off" />
+                <button type="submit">Submit Word</button>
+            </form>
+
+            <h2>Words Used:</h2>
+            <ul class="words-used-list">
+                {% for word in session.submittedWords %}
+                <li>{{ word }} ({{ word | length }} points)</li>
+                {% endfor %}
+            </ul>
+
+            <div class="back-button-container">
+                <a href="{{ path('homepage') }}" id="backToHomeBtn"
+                    >Back to Home (End Game)</a
+                >
+            </div>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                // Select the button by its ID and attach the click function
+                $("#backToHomeBtn").on("click", function (e) {
+                    // Optional: Prevent the default link action if you wanted to add a confirmation pop-up
+                    // e.preventDefault();
+
+                    // Use the link's href attribute to navigate
+                    var homeUrl = $(this).attr("href");
+
+                    // Confirmation before leaving the current game
+                    if (
+                        confirm(
+                            "Are you sure you want to end your current game and return to the homepage?"
+                        )
+                    ) {
+                        window.location.href = homeUrl;
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
