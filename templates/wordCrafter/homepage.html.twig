@@ -235,12 +235,31 @@
                     {% for highscore in highscores %}
                     <li>
                         <span class="rank">{{ loop.index }}.</span>
-                        <span class="word">{{ highscore.username}}
+                        <span class="word"
+                            >{{ highscore.username }}
                             <!-- <span class="">
                                 {{ highscore.submittedWords|join('<br />')|raw }}
                             </span> -->
-                            </span>
+                        </span>
                         <span class="score">{{ highscore.score }}</span>
+                    </li>
+                    {% endfor %}
+                </ol>
+                {% endif %}
+            </div>
+            <div class="section">
+                <h2 class="leaderboard-title">Top 10 Most Repeated Words</h2>
+                {% if mostRepeatedWords is empty %}
+                <p style="text-align: center; color: #7f8c8d">
+                    No words submitted yet. Be the first!
+                </p>
+                {% else %}
+                <ol class="leaderboard">
+                    {% for word, count in mostRepeatedWords %}
+                    <li>
+                        <span class="rank">{{ loop.index }}.</span>
+                        <span class="word">{{ word }}</span>
+                        <span class="score">{{ count }}</span>
                     </li>
                     {% endfor %}
                 </ol>

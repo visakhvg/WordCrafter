@@ -29,9 +29,9 @@ class WordService
         return in_array(strtolower($word), $this->dictionary);
     }
 
-    public function checkAlreadyCreatedWord(string $word, $submittedWords) 
+    public function checkAlreadyCreatedWord(string $word, $submittedWords)
     {
-        
+
         if (!empty($submittedWords)) {
             if (in_array($word, $submittedWords)) {
                 return true;
@@ -61,6 +61,27 @@ class WordService
 
     public function getGameHighScores()
     {
-        return $this->entityManager->getRepository(UserSubmission::class)->findBy([], ['score' => 'DESC','username'=>'ASC'], 10);
+        return $this->entityManager->getRepository(UserSubmission::class)->findBy([], ['score' => 'DESC', 'username' => 'ASC'], 10);
+    }
+
+    public function getMostRepeatedWords(): array
+    {
+
+        $submissions = $this->entityManager->getRepository(Usersubmission::class)->findAll();
+        $wordCounts = [];
+        foreach ($submissions as $submission) {
+            $words = $submission->getSubmittedWords();
+
+            foreach ($words as $word) {
+                $word = strtolower(trim($word));
+                if (!isset($wordCounts[$word])) {
+                    $wordCounts[$word] = 0;
+                }
+                $wordCounts[$word]++;
+            }
+        }
+        arsort($wordCounts);
+        // dump($wordCounts);die;
+        return array_slice($wordCounts, 0, 10, true);
     }
 }

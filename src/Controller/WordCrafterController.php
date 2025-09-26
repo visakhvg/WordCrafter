@@ -30,11 +30,12 @@ class WordCrafterController extends AbstractController
         try {
             // Now using the new service method to fetch highscores
             $highscores = $this->wordService->getGameHighscores();
+            $getMostRepeatedWords = $this->wordService->getMostRepeatedWords();
         } catch (\RuntimeException $e) {
             // Catch the specific exception thrown by the service
             $this->addFlash('error', 'The game is currently unavailable');
         }
-        return $this->render('wordCrafter/homepage.html.twig', ['highscores' => $highscores]);
+        return $this->render('wordCrafter/homepage.html.twig', ['highscores' => $highscores,'mostRepeatedWords'=>$getMostRepeatedWords]);
     }
 
     public function startGame(Request $request): Response
