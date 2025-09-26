@@ -28,7 +28,7 @@ class WordCrafterController extends AbstractController
     {
         $highscores = [];
         try {
-            // Now using the new service method to fetch highscores
+            
             $highscores = $this->wordService->getGameHighscores();
             $getMostRepeatedWords = $this->wordService->getMostRepeatedWords();
         } catch (\RuntimeException $e) {
