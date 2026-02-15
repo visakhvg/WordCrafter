@@ -1,21 +1,25 @@
 FROM php:8.3-cli
 
-# Install system packages
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     libzip-dev \
-    libpq-dev \
     libicu-dev \
     libonig-dev \
     libxml2-dev \
-    default-mysql-client \
-    && docker-php-ext-install \
-        pdo \
-        pdo_mysql \
-        intl \
-        zip \
-        opcache
+    default-mysql-client
+
+# Install PHP extensions required by Symfony
+RUN docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    intl \
+    zip \
+    mbstring \
+    ctype \
+    iconv \
+    opcache
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -23,10 +27,13 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 COPY . .
 
-# Install dependencies
-RUN composer install --no-dev --optimize-autoloader
+# IMPORTANT — allow composer to run as root in docker
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Symfony needs this
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Clear cache (ignore failure if DB not ready yet)
 RUN php bin/console cache:clear --env=prod || true
 
 # Railway dynamic port
