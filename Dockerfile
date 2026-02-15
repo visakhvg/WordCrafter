@@ -40,6 +40,8 @@ RUN php bin/console cache:clear
 RUN php bin/console cache:warmup
 # Clear cache (ignore failure if DB not ready yet)
 RUN php bin/console cache:clear --env=prod || true
+RUN rm -rf var/cache/*
+
 
 # Railway dynamic port
 CMD php -S 0.0.0.0:$PORT -t public
