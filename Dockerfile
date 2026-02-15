@@ -31,8 +31,13 @@ COPY . .
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Install dependencies
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
+
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
+RUN php bin/console cache:clear
+RUN php bin/console cache:warmup
 # Clear cache (ignore failure if DB not ready yet)
 RUN php bin/console cache:clear --env=prod || true
 
