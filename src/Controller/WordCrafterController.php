@@ -24,6 +24,7 @@ class WordCrafterController extends AbstractController
         $this->wordService = $wordService;
     }
 
+    
     public function homepage(): Response
     {
         $highscores = [];
