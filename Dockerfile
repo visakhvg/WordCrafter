@@ -17,4 +17,8 @@ RUN php bin/console cache:clear --env=prod
 RUN php bin/console cache:warmup --env=prod
 
 CMD php -S 0.0.0.0:8080 router.php
+COPY docker-start.sh /usr/local/bin/docker-start.sh
+RUN chmod +x /usr/local/bin/docker-start.sh
+
+CMD ["/usr/local/bin/docker-start.sh"]
 
