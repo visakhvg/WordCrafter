@@ -16,4 +16,5 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-script
 RUN php bin/console cache:clear --env=prod
 RUN php bin/console cache:warmup --env=prod
 
-CMD php -S 0.0.0.0:8080 -t public
+CMD php -S 0.0.0.0:8080 router.php
+
