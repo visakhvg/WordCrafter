@@ -1,24 +1,33 @@
-FROM php:8.2-cli
+FROM php:8.3-cli
 
+# Install system packages
 RUN apt-get update && apt-get install -y \
-    git unzip libzip-dev libpq-dev libonig-dev libxml2-dev \
-    && docker-php-ext-install pdo pdo_mysql
+    git \
+    unzip \
+    libzip-dev \
+    libpq-dev \
+    libicu-dev \
+    libonig-dev \
+    libxml2-dev \
+    default-mysql-client \
+    && docker-php-ext-install \
+        pdo \
+        pdo_mysql \
+        intl \
+        zip \
+        opcache
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 COPY . .
 
-ENV APP_ENV=prod
-ENV APP_DEBUG=0
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
-RUN php bin/console cache:clear --env=prod
-RUN php bin/console cache:warmup --env=prod
+# Symfony needs this
+RUN php bin/console cache:clear --env=prod || true
 
-CMD php -S 0.0.0.0:8080 router.php
-COPY docker-start.sh /usr/local/bin/docker-start.sh
-RUN chmod +x /usr/local/bin/docker-start.sh
-
-CMD ["/usr/local/bin/docker-start.sh"]
-
+# Railway dynamic port
+CMD php -S 0.0.0.0:$PORT -t public
